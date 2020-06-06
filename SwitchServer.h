@@ -3,12 +3,12 @@
   #include "Arduino.h"
   #include "SwitchTypen.h" 
   #include <ESP8266WiFi.h>
-  #include <ESP8266WebServer.h>
-  //#include <ESP8266WebServerSecure.h>
+  //#include <ESP8266WebServer.h>
+  #include <ESP8266WebServerSecure.h>
   #include "SwitchEngine.h"
   class SwitchServer {
     public:
-      SwitchServer(ESP8266WebServer *server, SwitchEngine* switchEngine); //LifxDevice** lifxDevices); //, LifxDevice _lifxDevices[], int arrayMaxBoundary);
+      SwitchServer(BearSSL::ESP8266WebServerSecure *server, SwitchEngine* switchEngine); //LifxDevice** lifxDevices); //, LifxDevice _lifxDevices[], int arrayMaxBoundary);
       void begin();
       void handleClient();
       void handleRoot();
@@ -18,7 +18,7 @@
     private:
       LifxDevice *lifxDevices;
       int lifxDevicesCount;
-      ESP8266WebServer *_server;
+      BearSSL::ESP8266WebServerSecure *_server;
       String htmlEntities(String str);
       SwitchEngine* _switchEngine;
       void getRoot();

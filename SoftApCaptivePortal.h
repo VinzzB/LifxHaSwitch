@@ -4,8 +4,8 @@
   #include <DNSServer.h>
   #include <ESP8266WiFi.h>  
   #include <WiFiClient.h>
-  #include <ESP8266WebServer.h>
- // #include <ESP8266WebServerSecure.h>
+  //#include <ESP8266WebServer.h>
+  #include <ESP8266WebServerSecure.h>
   
   typedef struct WlanConfig {
     char ssid[32] = "";
@@ -15,7 +15,7 @@
   
   class SoftApCaptivePortal {
     public:
-      void setup(ESP8266WebServer *server, const char *softAP_ssid, const char *softAP_password, const char *myHostname, IPAddress apIP, IPAddress netMsk, int(*connectToWifi)(void));
+      void setup(BearSSL::ESP8266WebServerSecure *server, const char *softAP_ssid, const char *softAP_password, const char *myHostname, IPAddress apIP, IPAddress netMsk, int(*connectToWifi)(void));
       void tick();
      void handleWifiSave();
      void handleWifi();
@@ -26,7 +26,7 @@
     private:
     /* PROPS */
       int(*connectToWifi)(void);
-      ESP8266WebServer *server;
+      BearSSL::ESP8266WebServerSecure *server;
       DNSServer dnsServer; 
       IPAddress apIP;
       const char *myHostname;

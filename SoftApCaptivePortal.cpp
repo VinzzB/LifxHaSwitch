@@ -3,7 +3,7 @@
 #include "SoftApCaptivePortal.h"
 
 
-void SoftApCaptivePortal::setup(ESP8266WebServer *server, const char *softAP_ssid, const char *softAP_password, const char *myHostname, IPAddress apIP, IPAddress netMsk, int(*connectToWifi)(void))
+void SoftApCaptivePortal::setup(BearSSL::ESP8266WebServerSecure *server, const char *softAP_ssid, const char *softAP_password, const char *myHostname, IPAddress apIP, IPAddress netMsk, int(*connectToWifi)(void))
 {
   this->server = server;
   this->myHostname = myHostname;
@@ -53,8 +53,8 @@ void SoftApCaptivePortal::requestWlanConnect() {
 
 /** Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again. */
 boolean SoftApCaptivePortal::redirectToPortal() {
-  if (!isIp(server->hostHeader()) && server->hostHeader() != (String(myHostname) + ".local")) {
-  //if(server->hostHeader() != (String(myHostname) + ".lan.vinzz.be")) {
+  //if (!isIp(server->hostHeader()) && server->hostHeader() != (String(myHostname) + ".local")) {
+  if(server->hostHeader() != (String(myHostname) + ".lan.vinzz.be")) {
     WiFiClient client = server->client();
     if(client == NULL) {
       Serial.println("No client in AP-CP request");      
@@ -121,7 +121,7 @@ void SoftApCaptivePortal::handleWifi() {
     toStringIp(WiFi.localIP()) +
     F("</td></tr>"
       "</table>"
-      "\r\n<br /><h4>Connect to network:</h4><form method='POST'><table><tr><th align='left'>WLAN list (<a href='") + server->uri() + F("'>refresh if any missing</a>)</th></tr>");
+      "\r\n<br /><h4>Connect to network:</h4><form method='POST' action='/wifisave'><table><tr><th align='left'>WLAN list (<a href='/'>refresh if any missing</a>)</th></tr>");
   int n = WiFi.scanNetworks();
   if (n > 0) {
     for (int i = 0; i < n; i++) {
@@ -134,11 +134,7 @@ void SoftApCaptivePortal::handleWifi() {
             "\r\n<tr><td><input type='radio' name='n' value=''>Manual:"
             "<input type='text' placeholder='network' name='mn'/></td></tr>"
             "</table>"
-            "<br /><input type='password' placeholder='WiFi password' name='p'/>"
-            "<h3>Administration credentials</h3><hr>"
-            "<input type='text' placeholder='Login username' name='lu'>"
-            "<input type='password' placeholder='Login password' name='lp'>"
-            "<hr>"
+            "<br /><input type='password' placeholder='password' name='p'/>"
             "<br /><input type='submit' value='Connect'/></form>"            
             "</body></html>");
   server->send(200, "text/html", Page);
@@ -159,14 +155,6 @@ void SoftApCaptivePortal::handleWifiSave() {
   if(ssid == "")
     ssid = server->arg("mn");
   ssid.toCharArray(wlanConfig.ssid, 32);
-
-  //cred
-  Serial.print("new username: ");
-  Serial.println(server->arg("lu"));
-
-  Serial.print("new password: ");
-  Serial.println(server->arg("lp"));
-  
   server->arg("p").toCharArray(wlanConfig.password, 32);
   //request for WLAN connection  (It is not possible to initialize the WLAN connection and then send response to AP client. The connection will be gone...
   //We need to send the response first, then connect to wifi...

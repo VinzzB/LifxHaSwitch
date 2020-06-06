@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "SwitchServer.h"
 
-SwitchServer::SwitchServer(ESP8266WebServer *server, SwitchEngine* switchEngine) {
+SwitchServer::SwitchServer(BearSSL::ESP8266WebServerSecure *server, SwitchEngine* switchEngine) {
   _switchEngine = switchEngine;
   _server = server;
   webTemplateStart = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta charset='utf-8' /><title>HA Switch</title><style>body{margin:50px;}input[type=checkbox],table{width:100%;text-align:center;}th,td{border-bottom:1px solid #ddd;}tr.row:hover{background-color:#ddd;}</style></head><body>";
@@ -17,7 +17,6 @@ void SwitchServer::handleRoot() {
 /*
 - MQTT Server
 - MQTT prefix
-- MQTT Enable per pin
 - Hostname?
 - 
 
@@ -81,7 +80,6 @@ void SwitchServer::getRoot() {
   }
   _server->sendContent("</tbody></table><br /><input type='submit' name='action' value='Save'> <input type='submit' name='action' value='Save in EEPROM'></form>");
   _server->sendContent("<form method='POST'><input type='submit' formAction='/discover' value='Discover Lifx devices'><input type='submit' formAction='/reset' value='Factory reset'></form>");
-  _server->sendContent("<hr><a href='/wifi'>Change WiFi Settings</a>");
   _server->sendContent(webTemplateEnd); 
   //_server->client().stop();
    Serial.println("Root send ");
