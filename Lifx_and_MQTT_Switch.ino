@@ -1,3 +1,6 @@
+/*
+HelloServerSecure
+  Udp NTP Client
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -83,17 +86,20 @@ void setup() {
       return;       
       
     if (client.localIP() == apIP)
-      captivePortal.handleWifi();
+      captivePortal.handleWifi(true);
     else if (session_authenticated())
       webServer.handleRoot();     
   });
   server.on("/discover",[]()  { if(captivePortal.redirectToPortal() || !session_authenticated()) return; webServer.handleLifxDiscovery(); });  
   server.on("/wifi",HTTP_GET,[]() { 
+    Serial.println("WiFi Get!");
     if(session_authenticated()) 
-      captivePortal.handleWifi();
+      captivePortal.handleWifi(false);
   });
   //captive portal setup
   server.on("/wifi",HTTP_POST,[]() { 
+    Serial.print("WiFi Post! wlan Connected: ");
+    Serial.print(captivePortal.wlanConnected);
     if(!captivePortal.wlanConnected || session_authenticated()) 
       captivePortal.handleWifiSave(); 
   });

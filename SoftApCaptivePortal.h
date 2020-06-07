@@ -18,7 +18,7 @@
       void setup(ESP8266WebServer *server, const char *softAP_ssid, const char *softAP_password, const char *myHostname, IPAddress apIP, IPAddress netMsk, int(*connectToWifi)(void));
       void tick();
      void handleWifiSave();
-     void handleWifi();
+     void handleWifi(bool checkConnection);
      boolean redirectToPortal();
      boolean wlanConnected;
      boolean requestedWlanConnect();

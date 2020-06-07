@@ -72,7 +72,7 @@ boolean SoftApCaptivePortal::redirectToPortal() {
 }
 
 /** Wifi config page handler */
-void SoftApCaptivePortal::handleWifi() {
+void SoftApCaptivePortal::handleWifi(bool checkConnection) {
   server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server->sendHeader("Pragma", "no-cache");
   server->sendHeader("Expires", "-1");
@@ -83,7 +83,7 @@ void SoftApCaptivePortal::handleWifi() {
     server->send(200, "text/html", "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta charset='utf-8' /><title>HA Switch</title></head><body><h3>Connecting, Please wait...</h3></body></html>");
     return;
   }
-  if(wlanConnected) {
+  if(wlanConnected && checkConnection) {
     String Page = String(F("<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta charset='utf-8' /><title>HA Switch</title></head><body>Your HA-Switch succesfully connected to network with SSID: ")) 
     + wlanConfig.ssid + F("<br />Connect your device to this WiFi network and visit <a targer='_BLANK' href='http://") 
     + toStringIp(WiFi.localIP()) + F("'>") + toStringIp(WiFi.localIP()) 
@@ -121,7 +121,7 @@ void SoftApCaptivePortal::handleWifi() {
     toStringIp(WiFi.localIP()) +
     F("</td></tr>"
       "</table>"
-      "\r\n<br /><h4>Connect to network:</h4><form method='POST'><table><tr><th align='left'>WLAN list (<a href='") + server->uri() + F("'>refresh if any missing</a>)</th></tr>");
+      "\r\n<br /><h4>Connect to network:</h4><form method='POST' action='/wifi'><table><tr><th align='left'>WLAN list (<a href='") + server->uri() + F("'>refresh if any missing</a>)</th></tr>");
   int n = WiFi.scanNetworks();
   if (n > 0) {
     for (int i = 0; i < n; i++) {
